@@ -176,6 +176,11 @@
                 }
 
                 quizBtn.onclick = async () => {
+                    const sel = mods
+                        .filter((_, i) => localStorage.getItem('udemyMod-' + i) === '1')
+                        .map(m => m.innerText.trim());
+
+                    if (!sel.length) return alert('Select modules first.');
                     const chosen = mods
                         .filter((_, i) => localStorage.getItem('udemyMod-' + i) === '1')
                         .map(m => m.innerText.trim());
