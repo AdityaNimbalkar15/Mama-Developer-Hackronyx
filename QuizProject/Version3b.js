@@ -137,7 +137,6 @@
 
                     if (!sel.length) return alert('Select modules first.');
 
-                    // 👉 Create or reuse a container for the project ideas
                     let ideasDiv = document.getElementById('projectIdeasBox');
                     if (!ideasDiv) {
                         ideasDiv = document.createElement('div');
@@ -157,7 +156,6 @@
 
                 modulesArea.appendChild(projBtn);
 
-                // 🔥 QUIZ BUTTON (uses same modules)
                 const quizBtn = document.createElement('button');
                 quizBtn.textContent = '📝 Quiz Me';
                 quizBtn.style.cssText =
@@ -176,26 +174,13 @@
                 }
 
                 quizBtn.onclick = async () => {
-                    const sel = mods
-                        .filter((_, i) => localStorage.getItem('udemyMod-' + i) === '1')
-                        .map(m => m.innerText.trim());
-
-                    if (!sel.length) return alert('Select modules first.');
                     const chosen = mods
                         .filter((_, i) => localStorage.getItem('udemyMod-' + i) === '1')
                         .map(m => m.innerText.trim());
 
                     if (!chosen.length) return alert('Select modules first.');
 
-                    // ✅ Create or reuse a div for quiz output
-                    let quizDiv = document.getElementById('quizOutputBox');
-                    if (!quizDiv) {
-                        quizDiv = document.createElement('div');
-                        quizDiv.id = 'quizOutputBox';
-                        modulesArea.appendChild(quizDiv);
-                    }
-
-                    quizDiv.innerHTML = '<h2>📝 Generating quiz…</h2>';
+                    overlay.innerHTML = '<h2>📝 Generating quiz…</h2>';
 
                     const qPrompt =
                         `You are an advanced technical course quiz generator.\n` +
@@ -211,10 +196,9 @@
                         `Format strictly as:\nQ1. <question>\nA) <opt>\nB) <opt>\nC) <opt>\nD) <opt>\n\n` +
                         `Begin:`;
 
-
-
                     try {
                         const txt = await cohereQuery(qPrompt, 650);
+                        overlay.style.display = 'block';
                         overlay.innerHTML =
                             '<button id="closeQuiz" style="position:absolute;top:15px;right:20px;font-size:20px;' +
                             'background:#f44336;color:white;border:none;border-radius:4px;padding:4px 12px;cursor:pointer;">✖</button>' +
