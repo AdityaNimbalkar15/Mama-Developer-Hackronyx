@@ -1,27 +1,27 @@
 // ==================================================
-// 📘 Udemy AI Bookmarklet Tool — FINAL INTEGRATED VERSION
+// 📘 Udemy AI Bookmarklet Tool — FINAL INTEGRATED VERSION
 // --------------------------------------------------
-// 🎯 New Helpers (auto/no‑prompt)
-//   1. 📑 Transcript → Smart Notes PDF  (notesBtn)
-//   2. 🌍 Real‑World Example from Transcript  (exampleBtn)
-// 🛠️ Original features (analysis, modules, quiz, projects,
-//    project evaluator, daily question, meme, chat) untouched.
+//  🎯 New Helpers (auto/no‑prompt)
+//      1. 📑  Transcript → Smart Notes PDF  (notesBtn)
+//      2. 🌍  Real‑World Example from Transcript  (exampleBtn)
+//  🛠️  Original features (analysis, modules, quiz, projects,
+//      project evaluator, daily question, meme, chat) untouched.
 //
-// ✱ Uses Cohere API key provided by user.
-// ✱ Automatically opens transcript panel, extracts cues
-//   without user clicks.
+//  ✱ Uses Cohere API key provided by user.
+//  ✱ Automatically opens transcript panel, extracts cues
+//    without user clicks.
 // ==================================================
 (function () {
     if (document.getElementById('udemyAnalyzerBtn')) return;
     if (!location.hostname.includes('udemy.com')) {
-        alert('⚠️ Open this on a Udemy course page.');
+        alert('⚠️ Open this on a Udemy course page.');
         return;
     }
 
     const TOKEN_KEY = 'udemyTokens';
     let tokenPoints = Number(localStorage.getItem(TOKEN_KEY) || 0);
     const saveTokens = () => localStorage.setItem(TOKEN_KEY, tokenPoints);
-    const addTokens  = d => { tokenPoints += d; saveTokens(); updateTokenUI?.(); };
+    const addTokens  = d => { tokenPoints += d; saveTokens(); updateTokenUI(); };
 
     const mainBtn = document.createElement('button');
     mainBtn.id = 'udemyAnalyzerBtn';
@@ -36,36 +36,23 @@
     document.body.appendChild(script);
 
     /*************************************************
-     * 🛠️ Cohere Helper
+     * 🛠️ Cohere Helper
      *************************************************/
     const apiKey   = 'zXH8KUSA3ncfZcxvIAZx5boAlGlTirN6LJmp706Q';
     const endpoint = 'https://api.cohere.ai/v1/generate';
-    const cohereQuery = async (prompt, max = 400, temp = 0.6) => {
-        const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: 'command-r-plus',
-                prompt,
-                max_tokens: max,
-                temperature: temp
-            })
-        });
-        const data = await res.json();
-        return data.generations?.[0]?.text || '⚠️ No response';
+    const cohereQuery = async (prompt,max=400,temp=0.6)=>{
+        const res=await fetch(endpoint,{method:'POST',headers:{'Authorization':`Bearer ${apiKey}`,'Content-Type':'application/json'},body:JSON.stringify({model:'command-r-plus',prompt,max_tokens:max,temperature:temp})});
+        const data=await res.json();
+        return data.generations?.[0]?.text||'⚠️ No response';
     };
 
     /*************************************************
-     * 📜 Automatic Transcript Fetcher
+     * 📜 AUTOMATIC TRANSCRIPT FETCHER
      *************************************************/
     async function fetchTranscript() {
-        const cueSel = '.transcript--highlight-cue--3T2w2,.transcript--transcript-cue--1pkkC,.ud-transcript-cue';
         for (let i = 0; i < 5; i++) {
-            const cues = [...document.querySelectorAll(cueSel)];
-            if (cues.length) return cues.map(c => c.innerText).join(' ').trim();
+            const spans = Array.from(document.querySelectorAll('[data-purpose="transcript-panel"] span'));
+            if (spans.length) return spans.map(el => el.textContent.trim()).join(' ');
             await new Promise(r => setTimeout(r, 400));
         }
         return '';
@@ -89,7 +76,7 @@
     document.body.appendChild(notesBtn);
 
     /*************************************************
-     * 🌍 Real-World Example Button
+     * 🌍 Example Button
      *************************************************/
     const exampleBtn = document.createElement('button');
     exampleBtn.textContent = '🌍 Example';
@@ -105,6 +92,5 @@
     };
     document.body.appendChild(exampleBtn);
 
-    // ✅ Append main UI button at the end
     document.body.appendChild(mainBtn);
 })();
